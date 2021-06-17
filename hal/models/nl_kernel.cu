@@ -489,6 +489,7 @@ std::vector<torch::Tensor> nl_forward_cuda(
     auto stride_a = stride.accessor<float,1>();
     auto padding_a = padding.accessor<float,1>();
 
+    std::cout << "Number of batches: " << num_batch << std::endl;
     std::cout << "Pool window size: (" << poolsize_a[0] << ", " << poolsize_a[1] << ")" << std::endl;
     std::cout << "Stride size: (" << stride_a[0] << ", " << stride_a[1] << ")" << std::endl;
     std::cout << "Padding size: (" << padding_a[0] << ", " << padding_a[1] << ")" << std::endl;
