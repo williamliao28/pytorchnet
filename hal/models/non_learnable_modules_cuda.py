@@ -46,11 +46,11 @@ class NonLearnableLayer(nn.Module):
         self.linear_combination = nn.Conv2d(3 * C_in, C_out, kernel_size=1, padding=0, bias=False)
         self.drop = drop
         print(f"Shape of kernel: {kernel_size}")
-        input("Press Enter to continue...")
+        #input("Press Enter to continue...")
         print(f"Shape of stride: {stride}")
-        input("Press Enter to continue...")
+        #input("Press Enter to continue...")
         print(f"Shape of padding: {padding}")
-        input("Press Enter to continue...")
+        #input("Press Enter to continue...")
 
     def forward(self, x):
         x1 = F.relu(self.conv(x), inplace=True)
