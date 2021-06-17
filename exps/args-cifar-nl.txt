@@ -24,7 +24,7 @@ resolution_high = 224
 resolution_wide = 224
 
 manual_seed = 0
-nepochs = 200
+nepochs = 1
 
 optim_method = SGD
 learning_rate = 0.1
