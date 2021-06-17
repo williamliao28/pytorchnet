@@ -55,6 +55,9 @@ class NonLearnableLayer(nn.Module):
     def forward(self, x):
         print(f"Shape of x: {x.shape}")
         print(x[0][0])
+        x_conv = self.conv(x)
+        print(f"Shape of x_conv: {x_conv.shape}")
+        print(x_conv[0][0])
         x1 = F.relu(self.conv(x), inplace=True)
         print(f"Shape of x1: {x1.shape}")
         print(x1[0][0])
