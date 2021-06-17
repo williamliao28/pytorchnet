@@ -70,6 +70,9 @@ class NonLearnableLayer(nn.Module):
         print(f"x1 size: {x1.shape}")
         print(f"x2 size: {x2.shape}")
         print(f"x3 size: {x3.shape}")
+        print(x1[0][0])
+        print(x2[0][0])
+        print(x3[0][0])
         input("Press Enter to continue...")
         x_cat = torch.cat([x1, x2, x3], dim=1)
         if self.drop > 0:
