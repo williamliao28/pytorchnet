@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from .non_learnable_modules import NonLearnableLayer
+#from .non_learnable_modules import NonLearnableLayer
+from .non_learnable_modules_cuda import NonLearnableLayer
 
 _TRACK_RUNNING_STATS = False
 
