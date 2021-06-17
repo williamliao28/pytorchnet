@@ -46,16 +46,22 @@ class NonLearnableLayer(nn.Module):
         self.linear_combination = nn.Conv2d(3 * C_in, C_out, kernel_size=1, padding=0, bias=False)
         self.drop = drop
         print(f"Shape of kernel: {kernel_size.shape}")
+        input("Press Enter to continue...")
         print(f"Shape of stride: {stride.shape}")
+        input("Press Enter to continue...")
         print(f"Shape of padding: {padding.shape}")
+        input("Press Enter to continue...")
 
     def forward(self, x):
         x1 = F.relu(self.conv(x), inplace=True)
         print(f"Shape of x1: {x1.shape}")
+        input("Press Enter to continue...")
         x2 = self.maxpool(x)
         print(f"Shape of x2: {x1.shape}")
+        input("Press Enter to continue...")
         x3 = self.avgpool(x)
         print(f"Shape of x3: {x1.shape}")
+        input("Press Enter to continue...")
         x_cat = torch.cat([x1, x2, x3], dim=1)
         if self.drop > 0:
             x_cat = F.dropout(x_cat, p=self.drop, training=self.training)
