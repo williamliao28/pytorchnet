@@ -54,14 +54,18 @@ class NonLearnableLayer(nn.Module):
 
     def forward(self, x):
         print(f"Shape of x: {x.shape}")
+        print(x[0][0])
         x1 = F.relu(self.conv(x), inplace=True)
         print(f"Shape of x1: {x1.shape}")
+        print(x1[0][0])
         input("Press Enter to continue...")
         x2 = self.maxpool(x)
         print(f"Shape of x2: {x1.shape}")
+        print(x2[0][0])
         input("Press Enter to continue...")
         x3 = self.avgpool(x)
         print(f"Shape of x3: {x1.shape}")
+        print(x3[0][0])
         input("Press Enter to continue...")
         x_cat = torch.cat([x1, x2, x3], dim=1)
         if self.drop > 0:
