@@ -47,9 +47,9 @@ class NonLearnableLayer(nn.Module):
         self.drop = drop
 
     def forward(self, x):
-        poolsize = torch.tensor([self.maxpool.kernel_size,self.maxpool.kernel_size])
-        stride   = torch.tensor([self.maxpool.stride,self.maxpool.stride])
-        padding  = torch.tensor([self.maxpool.padding,self.maxpool.padding])
+        poolsize = torch.tensor([float(self.maxpool.kernel_size),float(self.maxpool.kernel_size)])
+        stride   = torch.tensor([float(self.maxpool.stride),float(self.maxpool.stride)])
+        padding  = torch.tensor([float(self.maxpool.padding),float(self.maxpool.padding)])
         print(f"kernel_size = {poolsize}")
         print(f"stride = {stride}")
         print(f"padding = {padding}")
