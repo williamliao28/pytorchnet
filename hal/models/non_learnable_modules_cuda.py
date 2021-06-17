@@ -53,6 +53,7 @@ class NonLearnableLayer(nn.Module):
         #input("Press Enter to continue...")
 
     def forward(self, x):
+        print(f"Shape of x: {x.shape}")
         x1 = F.relu(self.conv(x), inplace=True)
         print(f"Shape of x1: {x1.shape}")
         input("Press Enter to continue...")
