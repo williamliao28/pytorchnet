@@ -1,7 +1,7 @@
 [Arguments]
 
 # project options
-project_name=CIFAR10
+project_name=CIFAR10_nl
 save_dir=results/
 logs_dir=results/
 
