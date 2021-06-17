@@ -63,6 +63,8 @@ std::vector<torch::Tensor> nl_relu_cuda(
           output.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
     }));
 
+    cudaDeviceSynchronize();
+
     return {output};
 }
 
@@ -139,6 +141,8 @@ std::vector<torch::Tensor> nl_maxpooling_cuda(
           poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1],
           output.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
     }));
+
+    cudaDeviceSynchronize();
 
     return {output};
 }
@@ -234,6 +238,8 @@ std::vector<torch::Tensor> nl_maxpooling_withpadding_cuda(
           output.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
     }));
 
+    cudaDeviceSynchronize();
+
     return {output};
 }
 
@@ -309,6 +315,8 @@ std::vector<torch::Tensor> nl_avgpooling_cuda(
           poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1],
           output.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
     }));
+
+    cudaDeviceSynchronize();
 
     return {output};
 }
@@ -402,6 +410,8 @@ std::vector<torch::Tensor> nl_avgpooling_withpadding_cuda(
           poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1],
           output.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
     }));
+
+    cudaDeviceSynchronize();
 
     return {output};
 }
@@ -525,6 +535,11 @@ std::vector<torch::Tensor> nl_forward_cuda(
           output2.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           output3.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
     }));
+    cudaDeviceSynchronize();
+
+    input_pad.resize_(at::IntArrayRef{0});
+    //cudaFree(input_pad.data());
+    //delete input_pad;
 
     return {output1, output2, output3};
   }
