@@ -55,7 +55,7 @@ class NonLearnableLayer(nn.Module):
         print(f"padding = {padding}")
         input("Press Enter to continue...")
         #x_conv = self.conv(x)
-        x1,x2,x3 = nl_module_cuda.nl_forward(x,self.conv(x),poolsize,stride,padding)
+        x1,x2,x3 = nl_module_cuda.nl_forward_v1(x,self.conv(x),poolsize,stride,padding)
         #print(f"x1 size: {x1.shape}")
         #print(f"x2 size: {x2.shape}")
         #print(f"x3 size: {x3.shape}")
