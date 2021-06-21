@@ -550,16 +550,16 @@ std::vector<torch::Tensor> nl_forward_cuda(
     std::cout << "block.y: " << block.y << std::endl;
     std::cout << "block.z: " << block.z << std::endl;
 
-    AT_DISPATCH_FLOATING_TYPES(input.type(), "nl_forward_gpu", ([&] {
-      checkCudaErrors(nl_forward_kernel<scalar_t><<<num_batch, block>>>(
+    checkCudaErrors(AT_DISPATCH_FLOATING_TYPES(input.type(), "nl_forward_gpu", ([&] {
+      nl_forward_kernel<scalar_t><<<num_batch, block>>>(
           input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           conv_input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           input_pad.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1],
           output1.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           output2.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
-          output3.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>()));
-    }));
+          output3.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
+    })));
     cudaDeviceSynchronize();
 
     //input_pad.resize_(at::IntArrayRef{0});
