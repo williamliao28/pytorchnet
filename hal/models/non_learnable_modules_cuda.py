@@ -77,7 +77,7 @@ class NonLearnableLayer(nn.Module):
         #print(x2[0][0])
         #print(x3[0][0])
         input("Press Enter to continue...")
-        d_x_cat = nl_module_cuda.nl_forward_withcat(x,self.conv(x),poolsize,stride,padding)
+        [d_x_cat] = nl_module_cuda.nl_forward_withcat(x,self.conv(x),poolsize,stride,padding)
         print(f"d_x_cat size: {d_x_cat.shape}")
         x_cat = torch.cat([x1, x2, x3], dim=1)
         print(f"x_cat size: {x_cat.shape}")
