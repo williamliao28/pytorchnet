@@ -711,5 +711,5 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     //cudaFree(input_pad.data());
     //delete input_pad;
 
-    return {output};
+    return output;
   }
