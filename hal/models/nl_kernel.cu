@@ -446,7 +446,6 @@ __global__ void nl_forward_kernel(
   int h = threadIdx.z;
   //iteration counter
   int ii, jj;
-  printf("(n,c,w,h)=(%d,%d,%d,%d)\n",n,c,w,h);
   //debug
   if (n==0 && c==0){
     printf("(n,c,w,h)=(%d,%d,%d,%d)\n",n,c,w,h);
