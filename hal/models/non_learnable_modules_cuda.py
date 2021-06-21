@@ -77,8 +77,12 @@ class NonLearnableLayer(nn.Module):
         #print(x2[0][0])
         #print(x3[0][0])
         input("Press Enter to continue...")
+        d_x_cat = nl_module_cuda.nl_forward_withcat(x,self.conv(x),poolsize,stride,padding)
+        print(f"d_x_cat size: {d_x_cat.shape}")
         x_cat = torch.cat([x1, x2, x3], dim=1)
         print(f"x_cat size: {x_cat.shape}")
+        print(f"Check x_cat: {torch.all(torch.abs(x_cat-d_x_cat)<1e-8)}")
+        input("Press Enter to continue...")
         if self.drop > 0:
             x_cat = F.dropout(x_cat, p=self.drop, training=self.training)
         return self.linear_combination(x_cat)
