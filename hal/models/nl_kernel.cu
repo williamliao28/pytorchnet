@@ -694,7 +694,7 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     std::cout << "block.z: " << block.z << std::endl;
 
     AT_DISPATCH_FLOATING_TYPES(input.type(), "nl_forward_gpu", ([&] {
-      nl_forward_kernel<scalar_t><<<grids, block>>>(
+      nl_forward_withcat_kernel<scalar_t><<<grids, block>>>(
           input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           conv_input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           input_pad.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
