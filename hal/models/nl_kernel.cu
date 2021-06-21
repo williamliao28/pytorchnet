@@ -439,11 +439,11 @@ __global__ void nl_forward_kernel(
   //batch index
   int n = blockIdx.x;
   //channel index
-  int c = threadIdx.x;
+  int c = blockIdx.y;
   //height index
-  int w = threadIdx.y;
+  int w = threadIdx.x;
   //width index
-  int h = threadIdx.z;
+  int h = threadIdx.y;
   //iteration counter
   int ii, jj;
   //debug
