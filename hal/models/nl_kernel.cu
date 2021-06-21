@@ -6,6 +6,16 @@
 #include <vector>
 #include <cmath>
 
+#define checkCudaErrors(call)                                \
+  do {                                                        \
+    cudaError_t err = call;                                   \
+    if (err != cudaSuccess) {                                 \
+      printf("CUDA error at %s %d: %s\n", __FILE__, __LINE__, \
+             cudaGetErrorString(err));                        \
+      exit(EXIT_FAILURE);                                     \
+    }                                                         \
+  } while (0)
+
 // helper functions
 template <typename scalar_t>
 __device__ __forceinline__ scalar_t relu(scalar_t z) {
@@ -541,14 +551,14 @@ std::vector<torch::Tensor> nl_forward_cuda(
     std::cout << "block.z: " << block.z << std::endl;
 
     AT_DISPATCH_FLOATING_TYPES(input.type(), "nl_forward_gpu", ([&] {
-      nl_forward_kernel<scalar_t><<<num_batch, block>>>(
+      checkCudaErrors(nl_forward_kernel<scalar_t><<<num_batch, block>>>(
           input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           conv_input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           input_pad.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1],
           output1.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           output2.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
-          output3.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
+          output3.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>()));
     }));
     cudaDeviceSynchronize();
 
