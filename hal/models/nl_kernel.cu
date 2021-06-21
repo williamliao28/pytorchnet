@@ -604,7 +604,7 @@ __global__ void nl_forward_withcat_kernel(
   // relu(conv(x))
   if (n < conv_input.size(0) && c < conv_input.size(1) && w < conv_input.size(2) && 
       h < conv_input.size(3)){
-    output1[n][c][w][h] = relu(conv_input[n][c][w][h]);
+    output[n][c][w][h] = relu(conv_input[n][c][w][h]);
   }
   //padding
   if (n < input_pad.size(0) && c < input_pad.size(1) && w < input_pad.size(2)-1 && w > 0 &&
