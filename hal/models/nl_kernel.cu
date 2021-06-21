@@ -446,17 +446,10 @@ __global__ void nl_forward_kernel(
   int h = threadIdx.y;
   //iteration counter
   int ii, jj;
-  //debug
-  if (n==0 && c==0){
-    printf("(n,c,w,h)=(%d,%d,%d,%d)\n",n,c,w,h);
-  }
   // relu(conv(x))
   if (n < conv_input.size(0) && c < conv_input.size(1) && w < conv_input.size(2) && 
       h < conv_input.size(3)){
     output1[n][c][w][h] = relu(conv_input[n][c][w][h]);
-    if (n==0 && c==0){
-      printf("out1[%d][%d][%d][%d]=%f\n",n,c,w,h,output1[n][c][w][h]);
-    }
   }
   //padding
   if (n < input_pad.size(0) && c < input_pad.size(1) && w < input_pad.size(2)-1 && w > 0 &&
@@ -475,9 +468,6 @@ __global__ void nl_forward_kernel(
         }
       }
     }
-    if (n==0 && c==0){
-      printf("out2[%d][%d][%d][%d]=%f\n",n,c,w,h,output2[n][c][w][h]);
-    }
   }
   //average pooling
   if (n < output3.size(0) && c < output3.size(1) && w < output3.size(2) && h < output3.size(3)){
@@ -489,9 +479,6 @@ __global__ void nl_forward_kernel(
       }
     }
     output3[n][c][w][h] = output3[n][c][w][h]/(pw*ph);
-    if (n==0 && c==0){
-      printf("out3[%d][%d][%d][%d]=%f\n",n,c,w,h,output3[n][c][w][h]);
-    }
   }
 }
 
