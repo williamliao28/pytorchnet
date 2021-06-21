@@ -545,13 +545,16 @@ std::vector<torch::Tensor> nl_forward_cuda(
     std::cout << "threadnum x: " << threadnum_x << std::endl;
     const int threadnum_y = min(padding_h,1024);
     std::cout << "threadnum y: " << threadnum_y << std::endl;
-    const dim3 block(num_channel,threadnum_x,threadnum_y);
+    // threads per block
+    const dim3 block(threadnum_x,threadnum_y);
+    // number of blocks
+    const dim3 grids(num_batch,num_channel);
     std::cout << "block.x: " << block.x << std::endl;
     std::cout << "block.y: " << block.y << std::endl;
     std::cout << "block.z: " << block.z << std::endl;
 
     AT_DISPATCH_FLOATING_TYPES(input.type(), "nl_forward_gpu", ([&] {
-      nl_forward_kernel<scalar_t><<<num_batch, block>>>(
+      nl_forward_kernel<scalar_t><<<grids, block>>>(
           input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           conv_input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           input_pad.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
