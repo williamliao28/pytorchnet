@@ -589,7 +589,7 @@ __global__ void nl_forward_withcat_kernel(
     const torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> input,
     const torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> conv_input,
     torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> input_pad,
-    const int pw, const int ph, const int stride_x, const int stride_y,
+    const int pw, const int ph, const int stride_x, const int stride_y, int padx, int pady,
     torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> output) {
   //batch index
   int n = blockIdx.x;
@@ -607,9 +607,9 @@ __global__ void nl_forward_withcat_kernel(
     output[n][c][w][h] = relu(conv_input[n][c][w][h]);
   }
   //padding
-  if (n < input_pad.size(0) && c < input_pad.size(1) && w < input_pad.size(2)-1 && w > 0 &&
-      h < input_pad.size(3)-1 && h > 0){
-        input_pad[n][c][w][h] = input[n][c][w-1][h-1];
+  if (n < input_pad.size(0) && c < input_pad.size(1) && w < input_pad.size(2)-padx && w >= padx &&
+      h < input_pad.size(3)-pady && h >= pady){
+        input_pad[n][c][w][h] = input[n][c][w-padx][h-pady];
   }
   __syncthreads();
   //max pooling
@@ -682,7 +682,7 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     std::cout << "Output size: " << output.sizes() << std::endl;
     //std::cout << "Output2 size: " << output2.sizes() << std::endl;
     //std::cout << "Output3 size: " << output3.sizes() << std::endl;
-    //std::cout << "Input with padding size: " << input_pad.sizes() << std::endl;
+    std::cout << "Input with padding size: " << input_pad.sizes() << std::endl;
 
     const int threadnum_x = min(padding_w,1024);
     const int threadnum_y = min(padding_h,1024);
