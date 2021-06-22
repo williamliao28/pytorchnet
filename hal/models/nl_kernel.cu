@@ -613,26 +613,24 @@ __global__ void nl_forward_withcat_kernel(
   }
   __syncthreads();
   //max pooling
-  if (n < output.size(0) && c >= input.size(1) && c < 2*input.size(1) && w < output.size(2)
-      && h < output.size(3)){
+  if (n < output.size(0) && c < input.size(1) && w < output.size(2) && h < output.size(3)){
     //initialize pooling
-    output[n][c][w][h] = input_pad[n][c%input.size(1)][w*stride_x][h*stride_y];
+    output[n][c+input.size(1)][w][h] = input_pad[n][c][w*stride_x][h*stride_y];
     for( ii = w*stride_x; ii < w*stride_x+pw; ii++){
       for( jj = h*stride_y; jj < h*stride_y+ph; jj++){
-        if(input_pad[n][c%input.size(1)][ii][jj] > output[n][c][w][h]){
-          output[n][c][w][h] = input_pad[n][c%input.size(1)][ii][jj];
+        if(input_pad[n][c][ii][jj] > output[n][c+input.size(1)][w][h]){
+          output[n][c+input.size(1)][w][h] = input_pad[n][c][ii][jj];
         }
       }
     }
   }
   //average pooling
-  if (n < output.size(0) && c >= 2*input.size(1) && c < 3*input.size(1) && w < output.size(2)
-      && h < output.size(3)){
+  if (n < output.size(0) && c < input.size(1) && w < output.size(2) && h < output.size(3)){
     //initialize pooling
-    output[n][c][w][h] = 0.0;
+    output[n][c+2*input.size(1)][w][h] = 0.0;
     for( ii = w*stride_x; ii < w*stride_x+pw; ii++){
       for( jj = h*stride_y; jj < h*stride_y+ph; jj++){
-        output[n][c][w][h] += input_pad[n][c%input.size(1)][ii][jj];
+        output[n][c+2*input.size(1)][w][h] += input_pad[n][c][ii][jj];
       }
     }
     output[n][c][w][h] = output[n][c][w][h]/(pw*ph);
@@ -691,7 +689,7 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     // threads per block
     const dim3 block(threadnum_x,threadnum_y);
     // number of blocks
-    const dim3 grids(num_batch,3*num_channel);
+    const dim3 grids(num_batch,num_channel);
     std::cout << "grid.x : " << grids.x << std::endl;
     std::cout << "grid.y : " << grids.y << std::endl;
     std::cout << "grid.z : " << grids.z << std::endl;
