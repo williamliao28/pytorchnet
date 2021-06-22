@@ -633,7 +633,7 @@ __global__ void nl_forward_withcat_kernel(
         output[n][c+2*input.size(1)][w][h] += input_pad[n][c][ii][jj];
       }
     }
-    output[n][c][w][h] = output[n][c][w][h]/(pw*ph);
+    output[n][c+2*input.size(1)][w][h] = output[n][c+2*input.size(1)][w][h]/(pw*ph);
   }
 }
 
