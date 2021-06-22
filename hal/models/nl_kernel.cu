@@ -616,11 +616,11 @@ __global__ void nl_forward_withcat_kernel(
   if (n < input.size(0) && c >= input.size(1) && c < 2*input.size(1) && w < input.size(2)
       && h < input.size(3)){
     //initialize pooling
-    output[n][c][w][h] = input_pad[n][c][w*stride_x][h*stride_y];
+    output[n][c][w][h] = input_pad[n][c%input.size(1)][w*stride_x][h*stride_y];
     for( ii = w*stride_x; ii < w*stride_x+pw; ii++){
       for( jj = h*stride_y; jj < h*stride_y+ph; jj++){
-        if(input_pad[n][c][ii][jj] > output[n][c][w][h]){
-          output[n][c][w][h] = input_pad[n][c][ii][jj];
+        if(input_pad[n][c%input.size(1)][ii][jj] > output[n][c][w][h]){
+          output[n][c][w][h] = input_pad[n][c%input.size(1)][ii][jj];
         }
       }
     }
@@ -632,7 +632,7 @@ __global__ void nl_forward_withcat_kernel(
     output[n][c][w][h] = 0.0;
     for( ii = w*stride_x; ii < w*stride_x+pw; ii++){
       for( jj = h*stride_y; jj < h*stride_y+ph; jj++){
-        output[n][c][w][h] += input_pad[n][c][ii][jj];
+        output[n][c][w][h] += input_pad[n][c%input.size(1)][ii][jj];
       }
     }
     output[n][c][w][h] = output[n][c][w][h]/(pw*ph);
