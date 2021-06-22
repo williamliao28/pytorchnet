@@ -613,7 +613,7 @@ __global__ void nl_forward_withcat_kernel(
   }
   __syncthreads();
   //max pooling
-  if (n < output.size(0) && c >= output.size(1) && c < 2*output.size(1) && w < output.size(2)
+  if (n < output.size(0) && c >= input.size(1) && c < 2*input.size(1) && w < output.size(2)
       && h < output.size(3)){
     //initialize pooling
     output[n][c][w][h] = input_pad[n][c%input.size(1)][w*stride_x][h*stride_y];
@@ -626,7 +626,7 @@ __global__ void nl_forward_withcat_kernel(
     }
   }
   //average pooling
-  if (n < output.size(0) && c >= 2*output.size(1) && c < 3*output.size(1) && w < output.size(2)
+  if (n < output.size(0) && c >= 2*input.size(1) && c < 3*input.size(1) && w < output.size(2)
       && h < output.size(3)){
     //initialize pooling
     output[n][c][w][h] = 0.0;
