@@ -702,7 +702,7 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
           input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           conv_input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
           input_pad.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
-          poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1],
+          poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1], padding_a[0], padding_a[1],
           output.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
     }));
     cudaDeviceSynchronize();
