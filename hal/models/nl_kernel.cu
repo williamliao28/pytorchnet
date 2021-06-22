@@ -660,6 +660,10 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     std::cout << "Pool window size: (" << poolsize_a[0] << ", " << poolsize_a[1] << ")" << std::endl;
     std::cout << "Stride size: (" << stride_a[0] << ", " << stride_a[1] << ")" << std::endl;
     std::cout << "Padding size: (" << padding_a[0] << ", " << padding_a[1] << ")" << std::endl;
+    std::cout << "num_batch: " << num_batch << std::endl;
+    std::cout << "num_channel: " << num_channel << std::endl;
+    std::cout << "width: " << width << std::endl;
+    std::cout << "height: " << height << std::endl;
 
     //std::cout << "(N,C,H,W) = (" << num_batch << ", " << num_channel << ", "
     //<< height << ", " << width << ")" << std::endl;
