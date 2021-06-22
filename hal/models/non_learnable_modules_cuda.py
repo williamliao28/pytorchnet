@@ -84,9 +84,9 @@ class NonLearnableLayer(nn.Module):
         x_cat = torch.cat([x1, x2, x3], dim=1)
         print(f"x_cat size: {x_cat.shape}")
         print(f"Check x_cat: {torch.all(torch.abs(torch.sub(x_cat,d_x_cat))<1e-8)}")
+        print(x_cat[0][0])
+        print(d_x_cat[0][0])
         if not torch.all(torch.abs(x_cat-d_x_cat)<1e-8) :
-            print(x_cat[0][0])
-            print(d_x_cat[0][0])
             input("Press Enter to continue...")
         if self.drop > 0:
             x_cat = F.dropout(x_cat, p=self.drop, training=self.training)
