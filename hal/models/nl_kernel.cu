@@ -668,6 +668,8 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     //std::cout << "(N,C,H,W) = (" << num_batch << ", " << num_channel << ", "
     //<< height << ", " << width << ")" << std::endl;
 
+    std::cout << "conv(x) size: " << conv_input.sizes() << std::endl;
+
     //calculate output size
     const int out_w = floor((width+2*padding_a[0]-poolsize_a[0])/stride_a[0])+1;
     const int out_h = floor((height+2*padding_a[1]-poolsize_a[1])/stride_a[1])+1;
