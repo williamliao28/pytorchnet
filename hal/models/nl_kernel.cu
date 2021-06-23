@@ -583,7 +583,7 @@ std::vector<torch::Tensor> nl_forward_cuda(
     return {output1, output2, output3};
   }
 
-  // forward kernel function
+// forward with cat kernel function
 template <typename scalar_t>
 __global__ void nl_forward_withcat_kernel(
     const torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> input,
@@ -635,6 +635,63 @@ __global__ void nl_forward_withcat_kernel(
     }
     output[n][c+2*input.size(1)][w][h] = output[n][c+2*input.size(1)][w][h]/(pw*ph);
   }
+}
+
+// forward with cat kernel function (combine 2 for loops into 1)
+template <typename scalar_t>
+__global__ void nl_forward_withcat_combine_kernel(
+    const torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> input,
+    const torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> conv_input,
+    torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> input_pad,
+    const int pw, const int ph, const int stride_x, const int stride_y, int padx, int pady,
+    torch::PackedTensorAccessor32<scalar_t,4,torch::RestrictPtrTraits> output) {
+  //batch index
+  int n = blockIdx.x;
+  //channel index
+  int c = blockIdx.y;
+  //height index
+  int w = threadIdx.x;
+  //width index
+  int h = threadIdx.y;
+  //iteration counter
+  int ii, jj;
+  // relu(conv(x))
+  if (n < conv_input.size(0) && c < conv_input.size(1) && w < conv_input.size(2) && 
+      h < conv_input.size(3)){
+    output[n][c][w][h] = relu(conv_input[n][c][w][h]);
+  }
+  //padding
+  if (n < input_pad.size(0) && c < input_pad.size(1) && w < input_pad.size(2)-padx && w >= padx &&
+      h < input_pad.size(3)-pady && h >= pady){
+        input_pad[n][c][w][h] = input[n][c][w-padx][h-pady];
+  }
+  __syncthreads();
+  //max pooling and average pooling
+  if (n < output.size(0) && c < input.size(1) && w < output.size(2) && h < output.size(3)){
+    //initialize pooling
+    output[n][c+input.size(1)][w][h] = input_pad[n][c][w*stride_x][h*stride_y];
+    output[n][c+2*input.size(1)][w][h] = 0.0;
+    for( ii = w*stride_x; ii < w*stride_x+pw; ii++){
+      for( jj = h*stride_y; jj < h*stride_y+ph; jj++){
+        if(input_pad[n][c][ii][jj] > output[n][c+input.size(1)][w][h]){
+          output[n][c+input.size(1)][w][h] = input_pad[n][c][ii][jj];
+        }
+        output[n][c+2*input.size(1)][w][h] += input_pad[n][c][ii][jj];
+      }
+    }
+    output[n][c+2*input.size(1)][w][h] = output[n][c+2*input.size(1)][w][h]/(pw*ph);
+  }
+  //average pooling
+  //if (n < output.size(0) && c < input.size(1) && w < output.size(2) && h < output.size(3)){
+    //initialize pooling
+  //  output[n][c+2*input.size(1)][w][h] = 0.0;
+  //  for( ii = w*stride_x; ii < w*stride_x+pw; ii++){
+  //    for( jj = h*stride_y; jj < h*stride_y+ph; jj++){
+  //      output[n][c+2*input.size(1)][w][h] += input_pad[n][c][ii][jj];
+  //    }
+  //  }
+  //  output[n][c+2*input.size(1)][w][h] = output[n][c+2*input.size(1)][w][h]/(pw*ph);
+  //}
 }
 
 // forward with cat kernel wrapper function
@@ -696,7 +753,7 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     std::cout << "block.x: " << block.x << std::endl;
     std::cout << "block.y: " << block.y << std::endl;
     std::cout << "block.z: " << block.z << std::endl;
-
+/*
     AT_DISPATCH_FLOATING_TYPES(input.type(), "nl_forward_gpu", ([&] {
       nl_forward_withcat_kernel<scalar_t><<<grids, block>>>(
           input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
@@ -705,6 +762,16 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
           poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1], padding_a[0], padding_a[1],
           output.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
     }));
+*/
+    AT_DISPATCH_FLOATING_TYPES(input.type(), "nl_forward_gpu", ([&] {
+      nl_forward_withcat_combine_kernel<scalar_t><<<grids, block>>>(
+          input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
+          conv_input.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
+          input_pad.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>(),
+          poolsize_a[0], poolsize_a[1], stride_a[0], stride_a[1], padding_a[0], padding_a[1],
+          output.packed_accessor32<scalar_t,4,torch::RestrictPtrTraits>());
+    }));
+
     cudaDeviceSynchronize();
     cudaError_t err = cudaGetLastError();
     if (err != cudaSuccess){
