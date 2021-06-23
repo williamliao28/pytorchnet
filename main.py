@@ -63,7 +63,8 @@ def main():
         )
 
     trainer.fit(model)
-    trainer.predict(model, test_dataloaders=dataloader.test_dataloader())
+    #trainer.predict(model, test_dataloaders=dataloader.test_dataloader())
+    #trainer.test(model, test_dataloaders=dataloader.test_dataloader())
 
 
 if __name__ == "__main__":
