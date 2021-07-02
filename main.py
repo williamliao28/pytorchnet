@@ -31,7 +31,9 @@ def main():
     )
 
     dataloader = getattr(datasets, args.dataset)(args)
+    print(f"Complete loading data!\n")
     model = Model(args, dataloader)
+    print(f"Complete initializing model!\n")
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=os.path.join(args.save_dir, args.project_name),
