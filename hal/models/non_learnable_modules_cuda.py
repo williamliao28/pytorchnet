@@ -1,4 +1,5 @@
 import math
+import time # test elapsed time
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -51,13 +52,18 @@ class NonLearnableLayer(nn.Module):
         stride   = torch.tensor([float(self.maxpool.stride),float(self.maxpool.stride)])
         padding  = torch.tensor([float(self.maxpool.padding),float(self.maxpool.padding)])
         #input("Press Enter to continue...")
-        #x_conv = self.conv(x)
+        t0 = time.clock()
+        x_conv = self.conv(x)
+        t1 = time.clock() - t0
+        print(f"Time elapsed for local binary convolution: {t1} seconds")
         #d_x1,d_x2,d_x3 = nl_module_cuda.nl_forward(x,self.conv(x),poolsize,stride,padding)
         #print(f"d_x1 size: {d_x1.shape}")
         #print(f"d_x2 size: {d_x2.shape}")
         #print(f"d_x3 size: {d_x3.shape}")
         #input("Press Enter to continue...")
-        x1 = F.relu(self.conv(x), inplace=True)
+        #x1 = F.relu(self.conv(x), inplace=True)
+        t0 = time.clock()
+        x1 = F.relu(x_conv, inplace=True)
         x2 = self.maxpool(x)
         x3 = self.avgpool(x)
         #print(f"x1 size: {x1.shape}")
@@ -76,8 +82,22 @@ class NonLearnableLayer(nn.Module):
         #if not torch.all(torch.abs(x3-d_x3)<1e-8) :
         #    input("Press Enter to continue...")
         #input("Press Enter to continue...")
-        [d_x_cat] = nl_module_cuda.nl_forward_withcat(x,self.conv(x),poolsize,stride,padding)
         x_cat = torch.cat([x1, x2, x3], dim=1)
+        t1 = time.clock() - t0
+        print(f"Time elapsed for pytorch: {t1} seconds")
+        t0 = time.clock()
+        [d_x_cat] = nl_module_cuda.nl_forward_withcat(x,x_conv,poolsize,stride,padding)
+        t1 = time.clock() - t0
+        print(f"Time elapsed for cuda kernel: {t1} seconds")
+        input("Press Enter to continue...")
+        print(f"Check size of x_cat, d_x_cat, conv(x), x1, x2, x3:")
+        print(f"x_cat size: {x_cat.shape}")
+        print(f"d_x_cat size: {d_x_cat.shape}")
+        print(f"conv(x) size: {x_conv.shape}")
+        print(f"x1 size: {x1.shape}")
+        print(f"x2 size: {x2.shape}")
+        print(f"x3 size: {x3.shape}")
+        input("Press Enter to continue...")
         if not torch.all(torch.abs(x_cat-d_x_cat)<1e-8) :
             print(f"kernel_size = {poolsize}")
             print(f"stride = {stride}")
