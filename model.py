@@ -19,6 +19,7 @@ class Model(pl.LightningModule):
         self.train_dataloader = dataloader.train_dataloader
 
         print(f"setup model ...\n")
+        print(f"{opts.model_options}\n")
         self.model = getattr(models, opts.model_type)(**opts.model_options)
         print(f"complete model setup!\n")
         self.val_loss = getattr(losses, opts.loss_type)(**opts.loss_options)
