@@ -710,7 +710,7 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     auto poolsize_a = poolsize.accessor<float,1>();
     auto stride_a = stride.accessor<float,1>();
     auto padding_a = padding.accessor<float,1>();
-
+/*
     std::cout << "Number of batches: " << num_batch << std::endl;
     std::cout << "Pool window size: (" << poolsize_a[0] << ", " << poolsize_a[1] << ")" << std::endl;
     std::cout << "Stride size: (" << stride_a[0] << ", " << stride_a[1] << ")" << std::endl;
@@ -719,27 +719,27 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     std::cout << "num_channel: " << num_channel << std::endl;
     std::cout << "width: " << width << std::endl;
     std::cout << "height: " << height << std::endl;
-
+*/
     //std::cout << "(N,C,H,W) = (" << num_batch << ", " << num_channel << ", "
     //<< height << ", " << width << ")" << std::endl;
 
-    std::cout << "conv(x) size: " << conv_input.sizes() << std::endl;
+    //std::cout << "conv(x) size: " << conv_input.sizes() << std::endl;
 
     //calculate output size
     const int out_w = floor((width+2*padding_a[0]-poolsize_a[0])/stride_a[0])+1;
     const int out_h = floor((height+2*padding_a[1]-poolsize_a[1])/stride_a[1])+1;
     const int padding_w = width+2*padding_a[0];
     const int padding_h = height+2*padding_a[1];
-    std::cout << "(out_h,out_w) = (" << out_h << ", " << out_w << ")" << std::endl;
+    //std::cout << "(out_h,out_w) = (" << out_h << ", " << out_w << ")" << std::endl;
     //ininitalize output
     torch::Tensor output = torch::zeros({num_batch, 3*num_channel, out_w, out_h},
       torch::TensorOptions().device(torch::kCUDA));
     torch::Tensor input_pad = torch::zeros({num_batch, num_channel, padding_w,
       padding_h}, torch::TensorOptions().device(torch::kCUDA));
-    std::cout << "Output size: " << output.sizes() << std::endl;
+    //std::cout << "Output size: " << output.sizes() << std::endl;
     //std::cout << "Output2 size: " << output2.sizes() << std::endl;
     //std::cout << "Output3 size: " << output3.sizes() << std::endl;
-    std::cout << "Input with padding size: " << input_pad.sizes() << std::endl;
+    //std::cout << "Input with padding size: " << input_pad.sizes() << std::endl;
 
     const int threadnum_x = min(padding_w,1024);
     const int threadnum_y = min(padding_h,1024);
@@ -747,12 +747,14 @@ std::vector<torch::Tensor> nl_forward_withcat_cuda(
     const dim3 block(threadnum_x,threadnum_y);
     // number of blocks
     const dim3 grids(num_batch,num_channel);
+    /*
     std::cout << "grid.x : " << grids.x << std::endl;
     std::cout << "grid.y : " << grids.y << std::endl;
     std::cout << "grid.z : " << grids.z << std::endl;
     std::cout << "block.x: " << block.x << std::endl;
     std::cout << "block.y: " << block.y << std::endl;
     std::cout << "block.z: " << block.z << std::endl;
+    */
 /*
     AT_DISPATCH_FLOATING_TYPES(input.type(), "nl_forward_gpu", ([&] {
       nl_forward_withcat_kernel<scalar_t><<<grids, block>>>(
