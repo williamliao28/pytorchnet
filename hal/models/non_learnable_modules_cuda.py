@@ -91,6 +91,7 @@ class NonLearnableLayer(nn.Module):
         print(f"Time elapsed for cuda kernel: {time.process_time() - t0:.16f} seconds")
         input("Press Enter to continue...")
         print(f"Check size of x_cat, d_x_cat, conv(x), x1, x2, x3:")
+        print(f"x size: {x.shape}")
         print(f"x_cat size: {x_cat.shape}")
         print(f"d_x_cat size: {d_x_cat.shape}")
         print(f"conv(x) size: {x_conv.shape}")
