@@ -52,9 +52,9 @@ class NonLearnableLayer(nn.Module):
         stride   = torch.tensor([float(self.maxpool.stride),float(self.maxpool.stride)])
         padding  = torch.tensor([float(self.maxpool.padding),float(self.maxpool.padding)])
         #input("Press Enter to continue...")
-        t0 = time.clock()
+        t0 = time.process_time()
         x_conv = self.conv(x)
-        t1 = time.clock() - t0
+        t1 = time.process_time() - t0
         print(f"Time elapsed for local binary convolution: {t1:.16f} seconds")
         #d_x1,d_x2,d_x3 = nl_module_cuda.nl_forward(x,self.conv(x),poolsize,stride,padding)
         #print(f"d_x1 size: {d_x1.shape}")
@@ -62,7 +62,7 @@ class NonLearnableLayer(nn.Module):
         #print(f"d_x3 size: {d_x3.shape}")
         #input("Press Enter to continue...")
         #x1 = F.relu(self.conv(x), inplace=True)
-        t0 = time.clock()
+        t0 = time.process_time()
         x1 = F.relu(x_conv, inplace=True)
         x2 = self.maxpool(x)
         x3 = self.avgpool(x)
@@ -83,11 +83,11 @@ class NonLearnableLayer(nn.Module):
         #    input("Press Enter to continue...")
         #input("Press Enter to continue...")
         x_cat = torch.cat([x1, x2, x3], dim=1)
-        t1 = time.clock() - t0
+        t1 = time.process_time() - t0
         print(f"Time elapsed for pytorch: {t1:.16f} seconds")
-        t0 = time.clock()
+        t0 = time.process_time()
         [d_x_cat] = nl_module_cuda.nl_forward_withcat(x,x_conv,poolsize,stride,padding)
-        t1 = time.clock() - t0
+        t1 = time.process_time() - t0
         print(f"Time elapsed for cuda kernel: {t1:.16f} seconds")
         input("Press Enter to continue...")
         print(f"Check size of x_cat, d_x_cat, conv(x), x1, x2, x3:")
