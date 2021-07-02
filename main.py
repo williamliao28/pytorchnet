@@ -17,6 +17,7 @@ import hal.datasets as datasets
 def main():
     # parse the arguments
     args = config.parse_args()
+    print(f"Complete parsing arguments!\n")
 
     if args.ngpu == 0:
         args.device = 'cpu'
